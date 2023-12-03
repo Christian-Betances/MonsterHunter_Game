@@ -32,6 +32,11 @@ public class Animation {
 		return images[0];
 	}
 	
+	public Image getFinalImage() {
+		
+		return images[images.length - 1];
+	}
+	
 	//goes to static image after animation plays
 	public boolean animationFinish() {
 		

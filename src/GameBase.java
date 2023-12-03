@@ -14,7 +14,7 @@ public abstract class GameBase extends    Applet
 	int my = -1;
 	
 	
-	boolean[] pressing = new boolean[1024];
+	static boolean[] pressing = new boolean[1024];
 	
 	static final int UP = KeyEvent.VK_UP;
 	static final int DN = KeyEvent.VK_DOWN;

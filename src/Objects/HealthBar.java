@@ -57,6 +57,14 @@ public class HealthBar extends Rect {
 	
 	public void draw(Graphics pen) {
 		
+		pen.setColor(Color.PINK);
+		
+		for(int i = 0; i < maxHealth; i++) {
+			
+			pen.fillRect(x + i, y, 1, h);
+			
+		}
+		
 		pen.setColor(Color.RED);
 		
 		for(int i = 0; i < currentHealth; i++) {
@@ -64,7 +72,5 @@ public class HealthBar extends Rect {
 			pen.fillRect(x + i, y, 1, h);
 			
 		}
-
 	}
-
 }

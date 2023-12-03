@@ -16,6 +16,9 @@ public class Wolf extends Rect{
 	private int initialX;
     private int initialY;
     
+    private int wolfX;
+    private int wolfY;
+    
     private boolean run = false;
     private boolean runningBack = false;
     private boolean handleRandom = true;
@@ -25,14 +28,14 @@ public class Wolf extends Rect{
     public boolean howlAttack = false;
     
     public boolean damage = false;
-    public boolean dead = false;
+    public boolean inFight = false;
     
     public int delay = 0;
     public boolean turnOnDelay = false;
     
-    private CombatHud h1;
+    CombatHud hud;
     
-    private HealthBar health = new HealthBar(500, getX(), getY(), 20);
+    private HealthBar health = new HealthBar(300, 870, 120, 20);
     
     Animation wolfIdle = new Animation("Wolf_Idle/Wolf_Idle_LT", 4, 15);
     //Wolf running from right
@@ -55,6 +58,11 @@ public class Wolf extends Rect{
 		
 		   initialX = x;
 	       initialY = y;
+	       
+	       wolfX = 870;
+	       wolfY = 120;
+	       
+	       health.setHealth(20);
 		
 	}
 	
@@ -121,9 +129,9 @@ public class Wolf extends Rect{
 		
 //		super.draw(pen);
 		
-		if(health.getHealth() > 0) {
+		if(health.getHealth() >= 0) {
 		
-		if(!h1.showHud) {
+		if(!hud.showHud) {
 			
 		//run
 		if(run && getX() < initialX) pen.drawImage(wolfRunLT.getCurrentImage(), getX() - 50, getY() - 60, 200, 200, null);
@@ -148,7 +156,9 @@ public class Wolf extends Rect{
 		}
 		
 		//hud stuff
-		if(h1.showHud) {
+		if(hud.showHud) {
+			
+			inFight = true;
 			
 			if(damage) {
 				
@@ -156,27 +166,28 @@ public class Wolf extends Rect{
 				
 				if(delay == 0)
 					
-				pen.drawImage(wolfIdle.getCurrentImage(), initialX - 57, initialY - 60, 500, 500, null);
+					pen.drawImage(wolfIdle.getCurrentImage(), wolfX, wolfY, 500, 500, null);
 					
 				if(turnOnDelay)
+					
 				delay++;
 					
 					if(biteAttack) {
-					pen.drawImage(wolfIdle.getCurrentImage(), initialX - 57, initialY - 60, 500, 500, null);
+					pen.drawImage(wolfIdle.getCurrentImage(), wolfX, wolfY, 500, 500, null);
 					
 					if(delay >= 20 && delay <= 140)
-					pen.drawImage(wolfBite.getCurrentImage(), initialX - 97, initialY + 60, 500, 500, null);
+					pen.drawImage(wolfBite.getCurrentImage(), wolfX - 97, wolfY + 60, 500, 500, null);
 					
 					if(delay >= 142 && delay <= 240)
-						pen.drawImage(wolfBite.getCurrentImage(), initialX - 207, initialY - 160, 500, 500, null);
+						pen.drawImage(wolfBite.getCurrentImage(), wolfX - 207, wolfY - 160, 500, 500, null);
 					}
 					if(howlAttack) {
 					
 					if(delay >= 40)
-					pen.drawImage(wolfHowl.getCurrentImage(), initialX - 57, initialY - 60, 500, 500, null);
+					pen.drawImage(wolfHowl.getCurrentImage(), wolfX, wolfY, 500, 500, null);
 					
 					else 
-						pen.drawImage(wolfIdle.getCurrentImage(), initialX - 57, initialY - 60, 500, 500, null);
+						pen.drawImage(wolfIdle.getCurrentImage(), wolfX, wolfY, 500, 500, null);
 					}
 					if(delay >= 260) {
 					
@@ -187,16 +198,15 @@ public class Wolf extends Rect{
 					}
 				
 			}
-			else pen.drawImage(wolfIdle.getCurrentImage(), initialX - 57, initialY - 60, 500, 500, null);
+			else pen.drawImage(wolfIdle.getCurrentImage(), wolfX, wolfY, 500, 500, null);
 			
 			pen.setColor(Color.WHITE);
 			pen.setFont(new Font("Arial", Font.PLAIN, 20));
-			pen.drawString(health.showHealth(), initialX, initialY - 10);
+			pen.drawString(health.showHealth(), wolfX, wolfY - 10);
 			
 			health.draw(pen);
 		}
 		}
-		else dead = true;
 //		sight.draw(pen);
 	}
 

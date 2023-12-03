@@ -38,6 +38,16 @@ public class Rect {
 		return this.y;
 	}
 	
+	public void setX(int x) {
+		
+		this.x = x;
+	}
+	
+	public void setY(int y) {
+		
+		this.y = y;
+	}
+	
 	public void moveUP(int dy) {
 	    this.y += -dy;
 	    this.vy = -dy;
@@ -158,5 +168,11 @@ public class Rect {
 		
 		pen.setColor(c);
 		pen.drawRect(x, y, w, h);
+	}
+	
+	public void drawFill(Graphics pen) {
+		
+		pen.setColor(c);	
+		pen.fillRect(x, y, w, h);
 	}
 }

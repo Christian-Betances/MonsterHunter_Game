@@ -7,6 +7,9 @@ import java.awt.event.MouseListener;
 import java.util.Random;
 
 import Characters.Hero;
+import Characters.Mimic;
+import Characters.Vendor;
+import Characters.Viking;
 import Characters.Wolf;
 
 public class CombatHud extends Rect implements MouseListener {
@@ -14,10 +17,14 @@ public class CombatHud extends Rect implements MouseListener {
 	private int mx;
 	private int my;
 	
+	private String [] manaDisc;
+	
 	private boolean screenShake = false;
 	private Random random = new Random();
 	private int delay = 0;
 	private boolean attackDelay = false;
+	
+	private int attackIncrease = 0;
 	
 	public static boolean showHud = false;
 	
@@ -27,7 +34,13 @@ public class CombatHud extends Rect implements MouseListener {
 	
 	Hero hero;
 	
+	Vendor vendor;
+	
 	Wolf wolf;
+	
+	Mimic mimic;
+	
+	Viking viking;
 	
 	private Rect border;
 	
@@ -46,6 +59,13 @@ public class CombatHud extends Rect implements MouseListener {
 					new Rect(x + 400, y + 150, width, height)
 					};
 		
+		manaDisc = new String [] {
+									"Mana: +50 | ATK: 30",
+									"Mana: -50 | ATK: 50",
+									"Mana: -100 | ATK: 100",
+									"Mana: -150 | Heal: 50",
+									};
+		
 		border = new Rect(-100, 650, 2100, 500);
 	}
 	
@@ -59,21 +79,40 @@ public class CombatHud extends Rect implements MouseListener {
 		this.hero = hero;
 	}
 	
+	public void getVendor(Vendor vendor) {
+		
+		this.vendor = vendor;
+	}
+	
 	public void getWolf(Wolf wolf) {
 		
 		this.wolf = wolf;
 	}
+	
+	public void getViking(Viking viking) {
+		
+		this.viking = viking;
+	}
+	
+	public void getMimic(Mimic mimic) {
+		
+		this.mimic = mimic;
+	}
 
 	public void draw(Graphics pen) {
+		
+		if(hero.alive()) {	
 		
 		if(!screenShake) {
 		pen.setColor(Color.RED);
 		pen.fillRect(border.x, border.y, border.w, border.h);
 		
-		
 		for	(int i = 0; i < attackHud.length; i++) {
+			pen.setColor(Color.WHITE);
+			attackHud[i].drawFill(pen);
+			
 			pen.setColor(Color.BLACK);
-			attackHud[i].draw(pen);
+			pen.drawString(manaDisc[i], attackHud[i].x, attackHud[i].y - 5);
 		}
 		
 		if(attackDelay) delay++;
@@ -106,6 +145,7 @@ public class CombatHud extends Rect implements MouseListener {
 		    	delay = 0;
 		    }
 		}
+		}
 	}
 
 	@Override
@@ -114,10 +154,19 @@ public class CombatHud extends Rect implements MouseListener {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(attackHud[0].contains(mx, my) && canAttack) {
+		if(vendor.powerUP)
+			attackIncrease = 20;
+		
+		if(attackHud[0].contains(mx, my)) {
+			
+			hero.increaseMana(50);
 			
 			hero.slash = true;
-			wolf.damage(30);
+			
+			if(wolf.inFight) wolf.damage(30 + attackIncrease);
+			if(viking.inFight) viking.damage(30 + attackIncrease);
+			
+			mimic.damage(30 + attackIncrease);
 			
 			System.out.println("slash");
 				
@@ -125,21 +174,31 @@ public class CombatHud extends Rect implements MouseListener {
 			canAttack = false;
 		}
 		
-		if(attackHud[1].contains(mx, my)) {
+		if(attackHud[1].contains(mx, my) && hero.heroMana() >= 50) {
+			
+			hero.decreaseMana(50);
 			
 			hero.fireAttack = true;
-			wolf.damage(50);
-				
+			
+			if(wolf.inFight) wolf.damage(50 + attackIncrease);
+			if(viking.inFight) viking.damage(50 + attackIncrease);
+			
+			mimic.damage(50);
 			System.out.println("Fire");
 			
 			attackDelay = true;
 			canAttack = false;
 		}
 		
-		if(attackHud[2].contains(mx, my)) {
+		if(attackHud[2].contains(mx, my) && hero.heroMana() >= 100) {
+			
+			hero.decreaseMana(100);
 			
 			hero.flareAttack = true;
-			wolf.damage(100);
+			if(wolf.inFight) wolf.damage(100 + attackIncrease);
+			if(viking.inFight) viking.damage(100 + attackIncrease);
+			
+			mimic.damage(100);
 			
 			System.out.println("Flare");
 			
@@ -148,12 +207,22 @@ public class CombatHud extends Rect implements MouseListener {
 			screenShake = true;
 		}
 		
-		if(attackHud[3].contains(mx, my)) {
+		
+		if(attackHud[3].contains(mx, my) && hero.heroMana() >= 150) {
+			
+			hero.decreaseMana(150);
+			hero.increaseHealth(50);
 			
 			hero.healHealth = true;
+			if(wolf.inFight) wolf.damage = true;
+			if(viking.inFight) viking.damage(0);
+			
+			mimic.damage(0);
+			
 			System.out.println("Heal");
 			
 			attackDelay = true;
+			
 			canAttack = false;
 		}
 	}

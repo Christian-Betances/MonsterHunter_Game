@@ -4,22 +4,39 @@ import java.awt.Graphics;
 
 import Characters.Wolf;
 import Characters.Hero;
+import Characters.Mimic;
 import Characters.Vendor;
+import Characters.Viking;
+import Objects.Coin;
 import Objects.CombatHud;
 import Objects.ImageLayer;
+import Objects.Rect;
 import Objects.Wall;
 
 public class Game extends GameBase {
 	
-	Wolf e1 = new Wolf(870, 120, 80, 80, 200, 200);
+	static Wolf e1 = new Wolf(870, 120, 80, 80, 200, 200);
+	//fix wolf e2 not taking damage
+	static Wolf e2 = new Wolf(400, 800, 80, 80, 200, 200);
 	
-	Hero hero = new Hero(550, 550);
+	static Hero hero = new Hero(550, 550);
 	
-	CombatHud hud = new CombatHud();
+	static CombatHud hud = new CombatHud();
+	
+	static Mimic mimic = new Mimic(600, 150, 5, 5);
+	
+	static Viking viking = new Viking(300, 600, 50, 30);
 	
 	Vendor vendor = new Vendor(460, 170, 100, 100);
 	
+	static private Coin coin = new Coin(1700, 10, 50, 50);
+	
 	Wall[] wall;
+	
+	static Level1 level1 = new Level1(hero, pressing, hud, e1, mimic, coin);
+	static Level2 level2 = new Level2(hero, pressing, hud, e2, viking, coin);
+	//change level back
+	static Level level = level2;
 	
 	private boolean canMove = true;
 	private boolean ePressed = false;
@@ -40,7 +57,7 @@ public class Game extends GameBase {
 				new Wall(670, 380, 40, 250), //starting location right
 				
 				new Wall(950, -20, 20, 200),// second room right top
-				new Wall(950, 270, 20, 200),// second room right bottom
+				new Wall(950, 280, 20, 200),// second room right bottom
 				new Wall(1070, 120, 40, 200),// third room right bottom
 				
 		};
@@ -50,141 +67,44 @@ public class Game extends GameBase {
 		addMouseListener(vendor);
 		
 		hud.getHero(hero);
+		hud.getVendor(vendor);
 		hud.getWolf(e1);
+		hud.getWolf(e2);
+		hud.getViking(viking);
+		hud.getMimic(mimic);
+		
+		hero.getCoin(coin);
 		
 		vendor.getHero(hero);
+		vendor.getCoin(coin);
 	}
 	
 	public void inGameLoop() {
 		
-		hero.moving = false;
-		hero.swordSwing = false;
+		level.inGameLoop();
 		
-			if(canMove) {
-				
-			if(pressing[_W]) hero.moveUP(5);
-			if(pressing[_S]) hero.moveDN(5);
-			if(pressing[_A]) hero.moveLT(5);
-			if(pressing[_D]) hero.moveRT(5);
+		if(level == level1) {
 			
-			if(pressing[_F]) hero.sword();
-			
-			}
-			
-			//Registers E only once when pressed
-			if (pressing[_E]) ePressed = true;
-		    else ePressed = false;
-	
-			//vendor
-			if(hero.overlaps(vendor)) {
-				
-				hero.pushedOutOf(vendor);
-					
-				}
-			
-			if(pressing[_E] && hero.overlaps(vendor.shopArea)) {
-				
-				vendor.showShop = true;
-				
-			}
-			
-			if(!hero.overlaps(vendor.shopArea)) {
-				
-				vendor.showShop = false;
-			}
-			
-			//walls
-			for(int i = 0; i < wall.length; i++)
+		for(int i = 0; i < wall.length; i++)
+		{
+			if(hero.overlaps(wall[i]))
 			{
-				if(hero.overlaps(wall[i]))
-				{
-					hero.pushedOutOf(wall[i]);
-				}
+				hero.pushedOutOf(wall[i]);
 			}
-			
-			//wolf
-			if(hero.overlaps(e1.sight)) {
-				
-				e1.chase(hero);
-				e1.activateRun();
-			}
-			
-			if(!hero.overlaps(e1.sight)) {
-				
-				e1.runBack();
-				e1.moveToInitialLocation();
-			
-			}
-			
-			if(hero.overlaps(e1)) {
-				
-				hud.showHud = true;
-				canMove = false;
-				
-				hero.inBattle = true;
-			}
-			
-			if(hero.overlaps(e1) && hero.swordSwing) 
-				
-				hero.damageWolf(e1);
-			
-			else if(e1.dead) {
-				
-				hud.showHud = false;
-				canMove = true;
-
-				hero.inBattle = false;
-			}
+		}
+		}
+		
+		//fix or scrap
+//		if(hero.overlaps(e1) && hero.swordSwing) 
+//			
+//			hero.damageWolf(e1);
+//		
 
 	}
 	
 	public void paint(Graphics pen) {
 		
-		pen.setColor(Color.BLACK);
-		pen.fillRect(0, 0, getWidth(), getHeight());
+		level.paint(pen);
 		
-		if(!canMove && !e1.dead) {
-			
-			hero.draw(pen);
-			hud.draw(pen);
-			e1.draw(pen);
-			
-			if(!hud.canAttack) {
-				
-				//Wolf damage
-				if(e1.delay >= 259) {
-					
-					if(e1.biteAttack)
-					hero.heroDamage(60);
-					
-					if(e1.howlAttack)
-					hero.heroDamage(30);
-					
-					hud.canAttack = true;
-				}
-			}
-			
-		}
-		else{
-			
-			stage1.draw(pen);
-			
-			hero.draw(pen);
-			
-			e1.draw(pen);
-			
-			vendor.draw(pen);
-			
-			if(hero.overlaps(vendor.shopArea)) {
-				
-				vendor.vendorTalk(pen);
-			}
-			
-//			pen.setColor(Color.RED);
-//			for(int i = 0; i < wall.length; i++)
-//			{
-//				wall[i].draw(pen);
-//			}
-		}
 	}
 }

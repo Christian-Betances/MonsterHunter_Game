@@ -5,16 +5,22 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import Objects.Animation;
-import Objects.Coins;
+import Objects.Coin;
+import Objects.CombatHud;
 import Objects.HealthBar;
+import Objects.ManaBar;
 import Objects.Sprite;
 
 public class Hero extends Sprite {
 	
 	private static String [] pose = {"DN", "LT", "RT", "UP","ATK_DN","ATK_LT","ATK_RT","ATK_UP"};
 	
-	private HealthBar health = new HealthBar(200, 50, 10, 50);
-	private Coins coin = new Coins(1700, 10, 50, 50);
+	private HealthBar health = new HealthBar(250, 50, 10, 50);
+	private ManaBar mana = 	   new ManaBar(200, 50, 70, 50);
+	
+	private Coin coin;
+	
+	private CombatHud hud;
 
 	public boolean inBattle = false;
 	public boolean animationDone = false;
@@ -39,6 +45,14 @@ public class Hero extends Sprite {
 		
 		//testing heal
 		health.setHealth(100);
+		
+		mana.setMana(100);
+	}
+	
+	public void setLocation(int x, int y) {
+		
+		super.setX(x);
+		super.setY(y);
 	}
 	
 	public void damageWolf(Wolf wolf) {
@@ -64,10 +78,39 @@ public class Hero extends Sprite {
 		health.increaseMaxHealth();
 	}
 	
-	//Work on going negative
+	public int heroMana() {
+		
+		return mana.getMana();
+	}
+	
+	public void increaseMaxMana(int x) {
+		
+		mana.increaseMaxMana(x);
+	}
+	
+	public void increaseMana(int x) {
+		
+		mana.increaseMana(x);
+	}
+	
+	public void decreaseMana(int x) {
+		
+		mana.decreaseMana(x);
+	}
+	
+	public void getCoin(Coin coin) {
+		
+		this.coin = coin;
+	}
+
 	public void bought(int x) {
 		
 		coin.buy(x);
+	}
+	
+	public void getMoney() {
+		
+		coin.increaseBalance();
 	}
 	
 	public boolean alive() {
@@ -104,18 +147,15 @@ public class Hero extends Sprite {
 				pen.drawImage(back.getStaticImage(), 200, 200, 500, 500, null);
 				pen.drawImage(heal.getCurrentImage(), 50, -100, 800, 500, null);
 				
-				//Need to fix Health
-				health.increaseHealth(10);
-				
 				if(heal.animationFinish()) healHealth = false;
 				
 			}
-			//check animation
+			
 			if(fireAttack) {
 				
-				for(int i = 0; i < 10; i++)
+				for(int i = 0; i < 10; i++) 
 				pen.drawImage(fire.getCurrentImage(), 10 + (i * 100), 100, 300, 300, null);
-				
+						
 				pen.drawImage(back.getCurrentImage(), 200, 200, 500, 500, null);
 				
 				if(fire.animationFinish()) fireAttack = false;
@@ -130,10 +170,16 @@ public class Hero extends Sprite {
 				if(flare.animationFinish()) flareAttack = false;
 			}
 			
-			else if(!slash) pen.drawImage(back.getStaticImage(), 200, 200, 500, 500, null);
+			else if(!slash && !healHealth && !fireAttack && !flareAttack) 
+				pen.drawImage(back.getStaticImage(), 200, 200, 500, 500, null);
 		}
 			
 		health.draw(pen);
+		mana.draw(pen);
+		
+		pen.setColor(Color.WHITE);
+		pen.setFont(new Font("Arial", Font.PLAIN, 20));
+		pen.drawString(mana.showMana(), 50, 100);
 		
 		pen.setColor(Color.WHITE);
 		pen.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -143,6 +189,8 @@ public class Hero extends Sprite {
 			pen.setColor(Color.RED);
 			pen.setFont(new Font("Arial", Font.PLAIN, 100));
 			pen.drawString("You're Dead!", 500, 400);
+			
+			hud.showHud = false;
 		}
 	}
 }
