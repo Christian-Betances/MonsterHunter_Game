@@ -9,13 +9,12 @@ import Objects.Coin;
 import Objects.CombatHud;
 import Objects.ImageLayer;
 import Objects.Rect;
-import Objects.Wall;
 
 public class Level1 extends Level {
 	
-	Wolf e1 = new Wolf(870, 120, 80, 80, 200, 200);
+	Wolf wolf = new Wolf(870, 120, 80, 80, 200, 200);
 	
-	Hero hero = new Hero(550, 550);
+	Hero hero;
 	
 	Rect nextLevel = new Rect(995, 130, 50, 50);
 	
@@ -23,28 +22,27 @@ public class Level1 extends Level {
 	
 	Vendor vendor = new Vendor(460, 170, 100, 100);
 	
-	Mimic m = new Mimic(600, 200, 5, 5);
+//	Mimic mimic;
 	
 	Coin coin;
 	
-	Level level;
+//	Level level;
 	
 	boolean [] pressing;
 	
 	private boolean canMove = true;
-	private boolean ePressed = false;
-	private boolean inShop = false;
 	
-	ImageLayer stage1 = new ImageLayer("Map_Tiles/Level1.png", 400, 20);
+	ImageLayer stage1= new ImageLayer("Map_Tiles/Level1.png", 400, 20, 800, 800);
 	
-	public Level1(Hero hero, boolean [] pressing, CombatHud hud, Wolf e1, Mimic m, Coin coin) {
+	public Level1(Hero hero, boolean [] pressing, CombatHud hud, Wolf wolf, Coin coin) {
 		
 		this.hero = hero;
 		this.pressing = pressing;
 		this.hud = hud;
-		this.m = m;
-		this.e1 = e1;
+		this.wolf = wolf;
 		this.coin = coin;
+		
+		hud.getWolf(wolf);
 	}
 	
 	public void initialize() {}
@@ -68,32 +66,32 @@ public class Level1 extends Level {
 				
 				Game.level = Game.level2;
 				
-				hero.setLocation(900, 900);;
+				hero.setLocation(600, 700);
 			}
 			
 			//mimic
-			if(hero.overlaps(m.onMimic)) {
-				
-				if(pressing[_E]) {
-					
-				System.out.println("E pressed");
-					
-				hud.showHud = true;
-				
-				canMove = false;
-				
-				hero.inBattle = true;
-				}
-			}
-			
-			if(m.getHealth() <= 0) {
-				
-				hud.showHud = false;
-				
-				canMove = true;
-
-				hero.inBattle = false;
-			}
+//			if(hero.overlaps(mimic.onMimic)) {
+//				
+//				if(pressing[_E]) {
+//					
+//				mimic.showHud = true;
+//				
+//				mimic.resetHealth();
+//				
+//				canMove = false;
+//				
+//				hero.showHud = true;
+//				}
+//			}
+//			
+//			if(mimic.getHealth() <= 0) {
+//				
+//				mimic.showHud = false;
+//				
+//				canMove = true;
+//
+//				hero.showHud = false;
+//			}
 			
 			//vendor
 			if(hero.overlaps(vendor)) {
@@ -114,35 +112,38 @@ public class Level1 extends Level {
 			}
 			
 			//wolf
-			if(hero.overlaps(e1.sight)) {
+			if(hero.overlaps(wolf.sight)) {
 				
-				e1.chase(hero);
-				e1.activateRun();
+				wolf.chase(hero);
+				wolf.activateRun();
 			}
 			
-			if(!hero.overlaps(e1.sight)) {
+			if(!hero.overlaps(wolf.sight)) {
 				
-				e1.runBack();
-				e1.moveToInitialLocation();
+				wolf.runBack();
+				wolf.moveToInitialLocation();
 			
 			}
 			
-			if(hero.overlaps(e1)) {
+			if(hero.overlaps(wolf)) {
 				
-				hud.showHud = true;
+				wolf.showHud = true;
+				
+				//change back
+//				wolf.resetHealth();
 				
 				canMove = false;
 				
-				hero.inBattle = true;
+				hero.showHud = true;
 			}
 			
-			if(e1.getHealth() <= 0) {
+			if(wolf.getHealth() <= 0) {
 				
-				hud.showHud = false;
+				wolf.showHud = false;
 				
 				canMove = true;
 
-				hero.inBattle = false;
+				hero.showHud = false;
 			}
 
 	}
@@ -152,39 +153,40 @@ public class Level1 extends Level {
 		pen.setColor(Color.BLACK);
 		pen.fillRect(0, 0, 3000, 3000);
 		
-		if(!canMove) {
+		if(wolf.showHud) {
 			
 			hero.draw(pen);
 			hud.draw(pen);
 			
-			if(hero.overlaps(e1))
+			if(hero.overlaps(wolf))
 			//draw wolf
-			e1.draw(pen);
+			wolf.draw(pen);
 			
 			
-			if(hero.overlaps(m.onMimic))
-			//draw mimic
-			m.draw(pen);
-			
+//			if(hero.overlaps(mimic.onMimic))
+//			//draw mimic
+//			mimic.draw(pen);
+//			
 			if(!hud.canAttack) {
 				
 				//Wolf damage
-				if(e1.delay >= 259) {
+				if(wolf.delay >= 259) {
 					
-					if(e1.biteAttack)
+					if(wolf.biteAttack)
 					hero.heroDamage(40);
 					
-					if(e1.howlAttack)
+					if(wolf.howlAttack)
 					hero.heroDamage(30);
 					
 					hud.canAttack = true;
 				}
 				
-				if(m.delay >= 190) {
-					
-					hero.heroDamage(50);
-					hud.canAttack = true;
-				}
+//				if(mimic.delay >= 190) {
+//					
+//					hero.heroDamage(50);
+//					 
+//					hud.canAttack = true;
+//				}
 			}
 			
 		}
@@ -195,24 +197,19 @@ public class Level1 extends Level {
 			pen.setColor(Color.GREEN);
 			nextLevel.draw(pen);
 			
-			m.draw(pen);
+//			mimic.draw(pen);
 			
-			if(hero.overlaps(m.onMimic) && m.getHealth() > 0) {
-				
-				m.openChest(pen);	
-			}
-			
+//			if(hero.overlaps(mimic.onMimic) && mimic.getHealth() >= 0) {
+//				
+//				mimic.openChest(pen);	
+//			}
+//			
 			hero.draw(pen);
 			
-			e1.draw(pen);
+			wolf.draw(pen);
 			
 			vendor.draw(pen);
-			
-//			pen.setColor(Color.RED);
-//			for(int i = 0; i < wall.length; i++)
-//			{
-//				wall[i].draw(pen);
-//			}
 		}
 	}
 }
+

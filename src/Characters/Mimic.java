@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import Objects.Animation;
-import Objects.CombatHud;
 import Objects.HealthBar;
 import Objects.Rect;
 
@@ -15,18 +14,20 @@ public class Mimic extends Rect{
 	
 	Animation mimicATK = new Animation("Mimic_ATK/mimic_Atk", 10, 10);
 	
-	CombatHud hud = new CombatHud();
-	
-	HealthBar health = new HealthBar(300, 870, 200, 20);
+	HealthBar health = new HealthBar(150, 870, 200, 20);
 	
 	private int x;
 	private int y;
+	private int healthReset = 0;
 	
 	private boolean damage = false;
+	private boolean defeated = false;
+	public boolean inFight = false;
 	
 	public Rect onMimic;
 	
 	public boolean openMimic;
+	public boolean showHud = false;
 	public int delay = 0;
 	
 	public Mimic(int x, int y, int w, int h) {
@@ -41,9 +42,22 @@ public class Mimic extends Rect{
 		health.setHealth(100);
 	}
 	
+	public void setLocation(int x, int y) {
+		
+		super.setX(x);
+		super.setY(y);
+	}
+	
 	public int getHealth() {
 		
 		return health.getHealth();
+	}
+	
+	public void resetHealth() {
+		
+		healthReset++;
+		if(healthReset == 1)
+		health.resetHealth();
 	}
 	
 	public void damage(int x) {
@@ -62,14 +76,16 @@ public class Mimic extends Rect{
 	
 	public void draw(Graphics pen) {
 		
-		if(health.getHealth() >= 0) {
-		   if (!hud.showHud) {
+		if(!defeated) {
+		   if (!showHud) {
 		        super.draw(pen);
 		        onMimic.draw(pen);
 		        pen.drawImage(mimicIdle.getCurrentImage(), x, y, 60, 60, null);
 		    }
 
-		    if (hud.showHud) {
+		    if (showHud) {
+		    	
+		    	inFight = true;
 		    	
 		    	if(damage) {
 		    		
@@ -95,6 +111,7 @@ public class Mimic extends Rect{
 		        health.draw(pen);
 		    }
 		}
+		if(health.getHealth() <= 0) defeated = true;
 	}
 
 }

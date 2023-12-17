@@ -16,6 +16,8 @@ public class Viking extends Rect{
 	
 	private int initialX;
 	private int initialY;
+	private int healthReset = 0;
+	
 	public int delay = 0; 
 	
 	private boolean movingRight = true;
@@ -32,8 +34,10 @@ public class Viking extends Rect{
 	private boolean handleRandom = false;
 	
 	public boolean turnOnDelay = false;
+	public boolean showHud = false;
+	private boolean defeated = false;
 	
-	HealthBar health = new HealthBar (300, 870, 200, 20);
+	HealthBar health = new HealthBar (200, 870, 200, 20);
 	CombatHud hud;
 	
 	Animation vikingRT = new Animation ("Viking_Move/Viking_RT", 8, 10);
@@ -45,12 +49,20 @@ public class Viking extends Rect{
 	
 	public Viking(int x, int y, int w, int h) {
 		
-		super(x,y,w + 10,h);
+		super(x,y,w,h);
 		
 		initialX = x;
 		initialY = y;
 		
 		sight = new Rect(initialX - 80, initialY, 200, 50);
+		
+		health.setHealth(10);
+	}
+	
+	public void setLocation(int x, int y) {
+		
+		super.setX(x);
+		super.setY(y);
 	}
 	
 	public void damage(int x) {
@@ -64,31 +76,38 @@ public class Viking extends Rect{
 		return health.getHealth();
 	}
 	
+	public void resetHealth() {
+		
+		healthReset++;
+		if(healthReset == 1)
+		health.resetHealth();
+	}
+	
 	public void patrol() {
 		
 		if(movingRight) {
 			
 			super.moveRT(1);
 			
-			if(getX() > initialX + 80) movingRight = false;
+			if(getX() >= sight.getX() + sight.getW() - 50) movingRight = false;
 				
 		}
-		else if(!movingRight) {
+		else {
 			
 			super.moveLT(1);
 			
-			if(getX() < initialX - 100) movingRight = true;
+			if(getX() <= sight.getX()) movingRight = true;
 		}	
 	}
 	
 	public void chaseDirection(Rect r) {
 		
-        if (r.getX() >= getX() && facingHeroRT && r.overlaps(sight)) {
+        if (r.getX() >= getX() && facingHeroRT) {
         	
             super.chase(r);  
         } 
         
-        else if (r.getX() <= getX() && facingHeroLT && r.overlaps(sight)) {
+        else if (r.getX() <= getX() && facingHeroLT) {
         	
             super.chase(r);   
         }
@@ -119,9 +138,9 @@ public class Viking extends Rect{
 		
 		super.draw(pen);
 		
-		if(health.getHealth() >= 0) {
+		if(!defeated) {
 			
-		if(!hud.showHud) {
+		if(!showHud) {
 			
 		if(movingRight) {
 		pen.drawImage(vikingRT.getCurrentImage(), getX() - 10, initialY - 50, 100, 100, null);
@@ -140,7 +159,7 @@ public class Viking extends Rect{
 		sight.draw(pen);
 		}
 		
-		if(hud.showHud) {
+		if(showHud) {
 			
 		inFight = true;
 		
@@ -182,7 +201,12 @@ public class Viking extends Rect{
 			pen.drawString(health.showHealth(), 870, 190);
 			
 			health.draw(pen);
+			
 			}
+		}
+		if(health.getHealth() <= 0) {
+			defeated = true;
+			
 		}
 	}
 }

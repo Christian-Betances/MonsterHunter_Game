@@ -27,6 +27,12 @@ public class Chest extends Rect{
 		this.h = h;
 	}
 	
+	public void setLocation(int x, int y) {
+		
+		super.setX(x);
+		super.setY(y);
+	}
+	
 	public void openChest(Graphics pen) {
 		
 		pen.setColor(Color.WHITE);

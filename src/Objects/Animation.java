@@ -32,6 +32,7 @@ public class Animation {
 		return images[0];
 	}
 	
+	//gets final animation for chest opening
 	public Image getFinalImage() {
 		
 		return images[images.length - 1];

@@ -39,8 +39,6 @@ public class Vendor extends Rect implements MouseListener{
 	
 	Animation vendor = new Animation("Vendor/Merchant_Idle0", 6, 10);
 	
-	Image scroll = Toolkit.getDefaultToolkit().getImage("Scroll/scroll.png");
-	
 	public Vendor(int x, int y, int w, int h) {
 		
 		super(x, y, w - 40, h);
@@ -61,13 +59,19 @@ public class Vendor extends Rect implements MouseListener{
 			
 		};
 		
-		shopDescription = new String [] {"[ 300 coins] Increase max health by 100",
-										 "[ 400 coins] Increase damage by 20",
+		shopDescription = new String [] {"[ 200 coins] Increase max health by 50",
+										 "[ 200 coins] Increase damage by 10",
 										 "[ 100 coins] Replenish health by 50",
 										 "[ 200 coins] Increase max mana by 50",
 										 "[ 100 coins] Replenish mana by 50"
 		};
 		
+	}
+	
+	public void setLocation(int x, int y) {
+		
+		super.setX(x);
+		super.setY(y);
 	}
 	
 	public void getHero(Hero hero) {
@@ -104,8 +108,6 @@ public class Vendor extends Rect implements MouseListener{
 		if(showShop) {
 			shop.draw(pen);
 			
-			pen.drawImage(scroll, shop.getX(), shop.getY(), 500, 800, null);
-			
 			for(int i = 0; i < shopItems.length; i++) {
 				
 				shopItems[i].draw(pen);
@@ -131,18 +133,18 @@ public class Vendor extends Rect implements MouseListener{
 		mx = e.getX();
 		my = e.getY();
 		
-		if(shopItems[0].contains(mx, my) && canBuy1 && coin.getBalance() >= 300) {
+		if(shopItems[0].contains(mx, my) && canBuy1 && coin.getBalance() >= 200) {
 			
 			hero.increaseMax();
-			hero.bought(300);
+			hero.bought(200);
 			System.out.println("Health Increased");
 			
 			canBuy1 = false;
 		}
 		
-		if(shopItems[1].contains(mx, my) && canBuy2 && coin.getBalance() >= 400) {
+		if(shopItems[1].contains(mx, my) && canBuy2 && coin.getBalance() >= 200) {
 			
-			hero.bought(400);
+			hero.bought(200);
 			System.out.println("Damage Increase");
 			
 			powerUP = true;

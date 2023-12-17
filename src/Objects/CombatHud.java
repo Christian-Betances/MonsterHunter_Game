@@ -26,11 +26,13 @@ public class CombatHud extends Rect implements MouseListener {
 	
 	private int attackIncrease = 0;
 	
-	public static boolean showHud = false;
-	
 	public boolean canAttack = true;
 	
 	private Rect [] attackHud;
+	
+	private boolean powerUP = false;
+	
+	private int number;
 	
 	Hero hero;
 	
@@ -52,21 +54,28 @@ public class CombatHud extends Rect implements MouseListener {
 		int width = 300;
 		int height = 100;
 		
-		attackHud = new Rect [] {
-					new Rect(x, y, width, height),
-					new Rect(x, y + 150, width, height),
-					new Rect(x + 400, y, width, height),
-					new Rect(x + 400, y + 150, width, height)
-					};
+		attackHud = new Rect[4];
 		
-		manaDisc = new String [] {
-									"Mana: +50 | ATK: 30",
-									"Mana: -50 | ATK: 50",
-									"Mana: -100 | ATK: 100",
-									"Mana: -150 | Heal: 50",
-									};
+        attackHud[0] = new Rect(x, y, width, height);
+        attackHud[1] = new Rect(x, y + 150, width, height);
+        attackHud[2] = new Rect(x + 400, y, width, height);
+        attackHud[3] = new Rect(x + 400, y + 150, width, height);
 		
 		border = new Rect(-100, 650, 2100, 500);
+	}
+	
+	public void updateDisc() {	
+		
+		if(powerUP) {
+        	number = 10;
+        }
+		 
+		manaDisc = new String [] {
+									"Mana: +50 | ATK: " + (30 + number),
+									"Mana: -50 | ATK: " + 50 + number,
+									"Mana: -100 | ATK: " + 70 + number,
+									"Mana: -150 | Heal: " + 100 + number,
+									};
 	}
 	
 	public void setDelay(int x) {
@@ -100,6 +109,8 @@ public class CombatHud extends Rect implements MouseListener {
 	}
 
 	public void draw(Graphics pen) {
+		
+		updateDisc();
 		
 		if(hero.alive()) {	
 		
@@ -154,19 +165,21 @@ public class CombatHud extends Rect implements MouseListener {
 		mx = e.getX();
 		my = e.getY();
 		
-		if(vendor.powerUP)
-			attackIncrease = 20;
-		
+		if(vendor.powerUP) {
+			powerUP = true;
+			this.attackIncrease = 30;
+		}
 		if(attackHud[0].contains(mx, my)) {
 			
-			hero.increaseMana(50);
+			hero.increaseMana(25);
 			
 			hero.slash = true;
 			
-			if(wolf.inFight) wolf.damage(30 + attackIncrease);
-			if(viking.inFight) viking.damage(30 + attackIncrease);
+			if(wolf.inFight) wolf.damage(10 + attackIncrease);
+			if(viking.inFight) viking.damage(10 + attackIncrease);
+			if(mimic.inFight) mimic.damage(10 + attackIncrease);
 			
-			mimic.damage(30 + attackIncrease);
+			mimic.damage(10 + attackIncrease);
 			
 			System.out.println("slash");
 				
@@ -180,10 +193,10 @@ public class CombatHud extends Rect implements MouseListener {
 			
 			hero.fireAttack = true;
 			
-			if(wolf.inFight) wolf.damage(50 + attackIncrease);
-			if(viking.inFight) viking.damage(50 + attackIncrease);
-			
-			mimic.damage(50);
+			if(wolf.inFight) wolf.damage(30 + attackIncrease);
+			if(viking.inFight) viking.damage(30 + attackIncrease);
+			if(mimic.inFight) mimic.damage(30 + attackIncrease);
+			if(mimic.inFight) mimic.damage(30 + attackIncrease);
 			System.out.println("Fire");
 			
 			attackDelay = true;
@@ -195,10 +208,9 @@ public class CombatHud extends Rect implements MouseListener {
 			hero.decreaseMana(100);
 			
 			hero.flareAttack = true;
-			if(wolf.inFight) wolf.damage(100 + attackIncrease);
-			if(viking.inFight) viking.damage(100 + attackIncrease);
-			
-			mimic.damage(100);
+			if(wolf.inFight) wolf.damage(50 + attackIncrease);
+			if(viking.inFight) viking.damage(50 + attackIncrease);
+			if(mimic.inFight) mimic.damage(50 + attackIncrease);
 			
 			System.out.println("Flare");
 			
@@ -211,14 +223,14 @@ public class CombatHud extends Rect implements MouseListener {
 		if(attackHud[3].contains(mx, my) && hero.heroMana() >= 150) {
 			
 			hero.decreaseMana(150);
-			hero.increaseHealth(50);
+			hero.increaseHealth(100);
 			
 			hero.healHealth = true;
-			if(wolf.inFight) wolf.damage = true;
-			if(viking.inFight) viking.damage(0);
 			
-			mimic.damage(0);
-			
+//			wolf.damage (0);
+//			viking.damage(0);
+//			mimic.damage(0);
+//			
 			System.out.println("Heal");
 			
 			attackDelay = true;
@@ -250,5 +262,4 @@ public class CombatHud extends Rect implements MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

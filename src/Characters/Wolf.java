@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.util.Random;
 
 import Objects.Animation;
-import Objects.CombatHud;
 import Objects.HealthBar;
 import Objects.Rect;
 
@@ -15,6 +14,7 @@ public class Wolf extends Rect{
 	
 	private int initialX;
     private int initialY;
+    private int healthReset = 0;
     
     private int wolfX;
     private int wolfY;
@@ -22,6 +22,7 @@ public class Wolf extends Rect{
     private boolean run = false;
     private boolean runningBack = false;
     private boolean handleRandom = true;
+    private boolean defeated = false;
     private Random random = new Random();
     
     public boolean biteAttack = false;
@@ -30,12 +31,12 @@ public class Wolf extends Rect{
     public boolean damage = false;
     public boolean inFight = false;
     
+    public boolean showHud = false;
+    
     public int delay = 0;
     public boolean turnOnDelay = false;
     
-    CombatHud hud;
-    
-    private HealthBar health = new HealthBar(300, 870, 120, 20);
+    private HealthBar health = new HealthBar(250, 870, 120, 20);
     
     Animation wolfIdle = new Animation("Wolf_Idle/Wolf_Idle_LT", 4, 15);
     //Wolf running from right
@@ -62,8 +63,14 @@ public class Wolf extends Rect{
 	       wolfX = 870;
 	       wolfY = 120;
 	       
-	       health.setHealth(20);
+	       health.setHealth(120);
 		
+	}
+    
+    public void setLocation(int x, int y) {
+	
+		super.setX(x);
+		super.setY(y);
 	}
 	
 	public void moveToInitialLocation() {
@@ -99,11 +106,20 @@ public class Wolf extends Rect{
 		health.damage(attack);
 		
 		damage = true;
+		
+		System.out.println("took damage");
 	}
 	
 	public int getHealth() {
 		
 		return health.getHealth();
+	}
+	
+	public void resetHealth() {
+		
+		healthReset++;
+		if(healthReset == 1)
+		health.resetHealth();
 	}
 	
 	public void randomAttack() {
@@ -129,9 +145,8 @@ public class Wolf extends Rect{
 		
 //		super.draw(pen);
 		
-		if(health.getHealth() >= 0) {
-		
-		if(!hud.showHud) {
+		if(!defeated) {	
+		if(!showHud) {
 			
 		//run
 		if(run && getX() < initialX) pen.drawImage(wolfRunLT.getCurrentImage(), getX() - 50, getY() - 60, 200, 200, null);
@@ -156,7 +171,7 @@ public class Wolf extends Rect{
 		}
 		
 		//hud stuff
-		if(hud.showHud) {
+		if(showHud) {
 			
 			inFight = true;
 			
@@ -207,7 +222,8 @@ public class Wolf extends Rect{
 			health.draw(pen);
 		}
 		}
-//		sight.draw(pen);
+		if(health.getHealth() <= 0) defeated = true;
+		
+		sight.draw(pen);
 	}
-
 }

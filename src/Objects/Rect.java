@@ -30,13 +30,23 @@ public class Rect {
 	public int getX() {
 		
 		return this.x;
-		
 	}
 	
 	public int getY() {
 		
 		return this.y;
 	}
+	
+	public int getW() {
+		
+		return this.w;
+	}
+	
+	public int getH() {
+	
+	return this.h;
+	}
+
 	
 	public void setX(int x) {
 		
@@ -46,6 +56,16 @@ public class Rect {
 	public void setY(int y) {
 		
 		this.y = y;
+	}
+	
+	public void setW(int w) {
+		
+		this.w = w;
+	}
+	
+	public void setH(int h) {
+		
+		this.h = h;
 	}
 	
 	public void moveUP(int dy) {

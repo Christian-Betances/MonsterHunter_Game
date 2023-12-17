@@ -1,7 +1,6 @@
 package Objects;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 
 public class HealthBar extends Rect {
@@ -21,6 +20,11 @@ public class HealthBar extends Rect {
 		this.x = x;
 		this.y = y;
 		this.h = h;
+	}
+	
+	public void resetHealth() {
+		
+		currentHealth = maxHealth;
 	}
 	
 	public String showHealth() {
@@ -53,6 +57,11 @@ public class HealthBar extends Rect {
 		if(currentHealth < maxHealth)
 			
 		currentHealth += heal;
+		
+		if(currentHealth + heal >= 300){
+			
+			currentHealth = maxHealth;
+		}
 	}
 	
 	public void draw(Graphics pen) {

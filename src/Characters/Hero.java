@@ -5,10 +5,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import Objects.Animation;
+import Objects.Bomb;
 import Objects.Coin;
-import Objects.CombatHud;
+
 import Objects.HealthBar;
 import Objects.ManaBar;
+import Objects.Rect;
 import Objects.Sprite;
 
 public class Hero extends Sprite {
@@ -18,20 +20,39 @@ public class Hero extends Sprite {
 	private HealthBar health = new HealthBar(250, 50, 10, 50);
 	private ManaBar mana = 	   new ManaBar(200, 50, 70, 50);
 	
-	private Coin coin;
+	public int falling = 0;
 	
-	private CombatHud hud;
+	private Coin coin;
+	private Bomb bomb;
+	
+	//move hero to location
+	public boolean moveLeft = false;
+	public boolean moveRight= false;
+	public boolean moveAbove= false;
+	public boolean moveBelow = false;
 
+	//combat
+	public boolean showHud = false;
 	public boolean inBattle = false;
 	public boolean animationDone = false;
+	public boolean shoot = false;
+	
+	private int distance = 0;
+	private int delay = 0;
+	
+	//location
+	private boolean down = false;
+	private boolean up = false;
+	private boolean right = false;
+	private boolean left = false;
 	
 	Animation back = new Animation("BOH/Hero_ATK_UP", 3, 20);
 	
 	Animation heal = new Animation("Heal/Heal", 24, 3);
-	//check fire ball animation and make images 1,2,3 instead of 01,02,03
+	
 	Animation fire = new Animation("Fire/Fire_Ball", 14, 20);
 	
-	Animation flare = new Animation("Flare/Solar_Flare", 36, 3);
+	public Animation flare = new Animation("Flare/Solar_Flare", 36, 3);
 	
 	//abilities
 	public boolean slash = false;
@@ -39,29 +60,161 @@ public class Hero extends Sprite {
 	public boolean fireAttack = false;
 	public boolean flareAttack = false;
 	
+	private Rect swordHitbox;
+	
+	private int swordWidth = 40;
+	private int swordHeight = 40;
+	
+	private int originalW = 70;
+	private int originalH = 70;
+	
 	public Hero(int x, int y) {
 		
 		super("Hero/Hero", pose, 3, x, y, 70, 70);
+
+		mana.setMana(200);
 		
-		//testing heal
-		health.setHealth(100);
-		
-		mana.setMana(100);
+		swordHitbox = new Rect(getX(), getY(), swordWidth, swordHeight);
 	}
 	
+	public boolean swordSwing(Rect r) {
+		
+		if(r.overlaps(swordHitbox)) return true;
+		
+		return false;
+	}
+	
+	public void setSwordLocation() {
+		
+	    if(getPose() == DN) {
+	        
+	    	down = true;
+	    	up = false;
+	    	left = false;
+	    	right = false;
+	    	
+	        swordHitbox.setX(getX() + 15);
+	        swordHitbox.setY(getY() + 50);
+	    }
+	    if(getPose() == LT) {
+	    	
+	    	down = false;
+	    	up = false;
+	    	left = true;
+	    	right = false;
+	        
+	        swordHitbox.setX(getX() - 10);
+	        swordHitbox.setY(getY() + 30);
+	    }
+	    if(getPose() == RT) {
+	    	
+	    	down = false;
+	    	up = false;
+	    	left = false;
+	    	right = true;
+
+	    	swordHitbox.setX(getX() + 30);
+	        swordHitbox.setY(getY() + 30);
+	    }
+	    if(getPose() == UP) {
+	    	
+	    	down = false;
+	    	up = true;
+	    	left = false;
+	    	right = false;
+	    	
+	    	swordHitbox.setX(getX() + 10);
+	        swordHitbox.setY(getY() - 5);
+	    }   
+	}
+	
+	public void shootAttack() {
+		
+	    if (shoot) {
+
+	    	delay++;
+	    	if(down || up) {
+	    	if(down) distance += 20;
+	    	if(up) distance -= 20;
+	    	
+	    	swordHitbox.setY(swordHitbox.getY() + distance);
+	    	}
+	    	if(right || left) {
+		    if(right) distance += 20;
+		    if(left) distance -= 20;
+		    	
+		    swordHitbox.setX(swordHitbox.getX() + distance);
+		    }
+	    }
+	    if (delay >= 20) {
+    		
+            distance = 0;
+            delay = 0;
+            shoot = false;
+            
+            if(down) {
+            swordHitbox.setX(getX() + 15);
+	        swordHitbox.setY(getY() + 50);
+            }
+	        if(up) {
+	        swordHitbox.setX(getX() + 10);
+		    swordHitbox.setY(getY() - 5);
+	        }
+	        if(right) {
+	        swordHitbox.setX(getX() + 30);
+		    swordHitbox.setY(getY() + 30);
+	        }
+	        if(left) {
+	        swordHitbox.setX(getX() - 10);
+	 	    swordHitbox.setY(getY() + 30);
+	        }
+        }
+	}
+
+	public void heroFalling() {
+		
+		falling++;
+		
+		if(falling <= 36 && getW() >= 0 && getH() >= 0) {
+			
+			int shrink = getW() - 2;
+			
+			super.setW(shrink);
+			super.setH(shrink);			
+		}
+		
+		else {
+			
+			if(moveLeft) super.setX(super.getX() - 100);
+			
+			if(moveRight) super.setX(super.getX() + 50);
+			
+			if(moveBelow) super.setY(super.getY() + 50);
+			
+			if(moveAbove) super.setY(super.getY() - 100);
+			
+			super.setW(originalW);
+			super.setH(originalH);
+			
+			falling = 0;
+		}
+	}
+
 	public void setLocation(int x, int y) {
 		
 		super.setX(x);
 		super.setY(y);
 	}
 	
-	public void damageWolf(Wolf wolf) {
+	public void getBomb(Bomb bomb) {
 		
-		//Fix out of battle attack
-        
-		if(!inBattle)
-        wolf.damage(10);     
-    }
+		this.bomb = bomb;
+	}
+	
+	public void dropBomb() {
+		 
+		bomb.dropBomb = true;
+	}
 	
 	public void heroDamage(int x) {
 		
@@ -119,10 +272,15 @@ public class Hero extends Sprite {
 	}
 	
 	public void draw(Graphics pen) {
+		swordHitbox.setColor(Color.GREEN);
+		swordHitbox.draw(pen);
+		
+		setSwordLocation();
+		shootAttack();
 		
 		if(alive()) {
 			
-		if (!inBattle) {
+		if (!showHud) {
 			
 			super.draw(pen);
 			
@@ -134,12 +292,12 @@ public class Hero extends Sprite {
 			
 		}
 		
-		else if(inBattle) {
+		if(showHud) {
 			
 			if(slash) {
 				pen.drawImage(back.getCurrentImage(), 200, 200, 500, 500, null);
 				
-				if(back.animationFinish()) slash = false;
+				if(back.animationFinish() || !showHud) slash = false;
 			}
 			
 			if(healHealth) {
@@ -147,7 +305,7 @@ public class Hero extends Sprite {
 				pen.drawImage(back.getStaticImage(), 200, 200, 500, 500, null);
 				pen.drawImage(heal.getCurrentImage(), 50, -100, 800, 500, null);
 				
-				if(heal.animationFinish()) healHealth = false;
+				if(heal.animationFinish() || !showHud) healHealth = false;
 				
 			}
 			
@@ -158,7 +316,7 @@ public class Hero extends Sprite {
 						
 				pen.drawImage(back.getCurrentImage(), 200, 200, 500, 500, null);
 				
-				if(fire.animationFinish()) fireAttack = false;
+				if(fire.animationFinish() || !showHud) fireAttack = false;
 				
 			}
 			
@@ -167,7 +325,7 @@ public class Hero extends Sprite {
 				pen.drawImage(flare.getCurrentImage(), 200, -500, 1500, 1500, null);
 				pen.drawImage(back.getStaticImage(), 200, 200, 500, 500, null);
 				
-				if(flare.animationFinish()) flareAttack = false;
+				if(flare.animationFinish() || !showHud) flareAttack = false;
 			}
 			
 			else if(!slash && !healHealth && !fireAttack && !flareAttack) 
@@ -190,7 +348,6 @@ public class Hero extends Sprite {
 			pen.setFont(new Font("Arial", Font.PLAIN, 100));
 			pen.drawString("You're Dead!", 500, 400);
 			
-			hud.showHud = false;
 		}
 	}
 }

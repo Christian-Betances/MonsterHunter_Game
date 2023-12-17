@@ -6,19 +6,18 @@ public class Sprite extends Rect {
 	
 	Animation [] animation;
 	
-	final static int DN = 0;
-	final static int LT = 1;
-	final static int RT = 2;
-	final static int UP = 3;
+	public final static int DN = 0;
+	public final static int LT = 1;
+	public final static int RT = 2;
+	public final static int UP = 3;
 	
 	final static int ATK_DN = 4;
 	final static int ATK_LT = 5;
 	final static int ATK_RT = 6;
 	final static int ATK_UP = 7;
 	
-	final static int Ball0 = 1;
-	
-	private int pose = DN;
+	//starting pose
+	private int pose = UP;
 	
 	public boolean moving = false;
 	
@@ -32,9 +31,15 @@ public class Sprite extends Rect {
 		
 		for(int i = 0; i < pose.length; i++) {
 			
-			animation[i] = new Animation(name + "_" + pose[i], imageCount, 20);
-			
-		}	
+			animation[i] = new Animation(name + "_" + pose[i], imageCount, 20);	
+		}
+		
+		
+	}
+	
+	public int getPose() {
+		
+		return pose;
 	}
 	
 	public void moveUP(int dy) {
@@ -45,8 +50,6 @@ public class Sprite extends Rect {
 	    this.vy = -dy;
 	    
 	    moving = true;
-	    
-	  
 	}
 
 	public void moveDN(int dy) {

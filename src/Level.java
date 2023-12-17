@@ -75,7 +75,7 @@ public abstract class Level {
 		
 		public abstract void inGameLoop();
 		
-		public abstract void paint(Graphics penSD);
+		public abstract void paint(Graphics pen);
 		
 
 	}

@@ -1,33 +1,54 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
+import Characters.Slime;
 import Characters.Hero;
+import Characters.Mimic;
 import Characters.Vendor;
 import Characters.Viking;
 import Characters.Wolf;
+import Objects.Bomb;
 import Objects.Chest;
 import Objects.Coin;
 import Objects.CombatHud;
+import Objects.Floor;
 import Objects.ImageLayer;
+import Objects.MovingPlatform;
 import Objects.Rect;
 import Objects.Trap;
 import Objects.Wall;
 
 public class Level2 extends Level {
 	
-	Wolf e2 = new Wolf(400, 800, 80, 80, 200, 200);
+	Wolf wolf;
+	
+	Wolf wolf2 = new Wolf(450, 280,100,100, 50, 50);
 	
 	Hero hero;
 	
-	Rect nextLevel;
+	Bomb bomb;
+	
+	Rect nextLevel = new Rect(1260, 350, 50, 50);
 	
 	CombatHud hud;
 	
-	Vendor vendor = new Vendor(460, 170, 100, 100);
+	Mimic mimic;
 	
-	Chest chest = new Chest(400, 300, 100, 100);
+	Vendor vendor = new Vendor(900, 620, 100, 100);
 	
-	Trap trap = new Trap(700, 200, 50, 50);
+	Chest chest = new Chest(480, 450, 50, 50);
+	
+	Trap trap [] = new Trap [] {
+				   new Trap(700, 300, 50, 50),
+				   new Trap(650, 500, 50, 50),
+	};
+	
+	Slime slime [] = new Slime [] {
+		
+		new Slime (600, 300, 50, 50),
+		new Slime (700, 200, 50, 50),
+		new Slime (700, 300, 50, 50),
+	};
 	
 	Coin coin;
 	
@@ -35,22 +56,44 @@ public class Level2 extends Level {
 	
 	Wall[] wall;
 	
+	Floor [] fall = new Floor[] {
+			new Floor(630, 5, 300, 5),
+			new Floor(940, 50, 200, 200),
+			new Floor(820, 230, 340, 270),
+			new Floor(800, 660, 80, 200),
+			new Floor(900, 740, 800, 100),
+	};
+	
+	MovingPlatform plat = new MovingPlatform(882, 50, 200, 200);
+	
 	boolean [] pressing;
 	
 	private boolean canMove = true;
-	private boolean ePressed = false;
-	private boolean inShop = false;
-	
+
 	private boolean gotCoin = false;
 	
-	ImageLayer stage2 = new ImageLayer("Map_Tiles/Level1.png", 1000, 20);
+	private int damageDelay = 0;
+	private boolean slimeChase = false;
 	
-	public Level2(Hero hero, boolean [] pressing, CombatHud hud, Wolf e2, Viking viking, Coin coin) {
+	ImageLayer stage2 = new ImageLayer("Map_Tiles/Level2.png", 400, 30, 1000, 800);
+	ImageLayer stage2Destroy = new ImageLayer("Map_Tiles/Level2_Destroy.png", 400, 30, 1000, 800);
+	
+	public Level2(Hero hero, boolean [] pressing, CombatHud hud, Wolf wolf, Mimic mimic, Bomb bomb, Viking viking, Coin coin) {
 		
 		this.hero = hero;
+		
+		this.mimic = mimic;
+		
+//		hero.setLocation(600, 700);
+		
+		this.bomb = bomb;
+		
 		this.pressing = pressing;
-		this.e2 = e2;
+		
+		this.wolf = wolf;
+		
 		this.hud = hud;
+		
 		this.viking = viking;
 		
 		this.coin = coin;
@@ -63,16 +106,135 @@ public class Level2 extends Level {
 		hero.moving = false;
 		hero.swordSwing = false;
 		
+		if(hero.overlaps(nextLevel)) {
+			
+			Game.level = Game.level3;
+			
+			hero.setLocation(1000, 800);
+		}
+		
 			if(canMove) {
+				
+			bomb.BombLocation(hero.getX(), hero.getY());
 				
 			if(pressing[_W]) hero.moveUP(5);
 			if(pressing[_S]) hero.moveDN(5);
 			if(pressing[_A]) hero.moveLT(5);
 			if(pressing[_D]) hero.moveRT(5);
 			
-			if(pressing[_F]) hero.sword();
-			
+			//sword attack
+			if(pressing[UP] || pressing[RT]) {
+				hero.sword();
+				
+				for(int i = 0; i < slime.length; i++)
+				if(hero.swordSwing(slime[i])) slime[i].attack = true;
 			}
+			
+			//shoot attack
+			if(pressing[RT]) {
+				hero.sword();
+				
+				hero.shoot = true;
+			}
+			
+			//slime
+			for(int i = 0; i < slime.length; i++)
+			if(slimeChase) slime[i].chase(hero);
+		
+			damageDelay ++;
+			
+			for(int i = 0; i < slime.length; i++)
+			if(damageDelay >= 30 && !slime[i].attack) {
+			
+			hero.heroDamage(1);
+			
+			damageDelay = 0;
+			}
+			}
+			
+			for(int i = 0; i < slime.length; i++)
+			if(hero.overlaps(slime[i].sight)) {
+				
+				slimeChase = true;
+			}
+			//mimic
+			if(hero.overlaps(mimic.onMimic)) {
+				
+				mimic.showHud = true;
+				
+				hero.showHud = true;
+				
+				canMove = false;
+			}
+			
+			if(mimic.getHealth() <= 0) {
+				
+				mimic.showHud = false;
+				
+				canMove = true;
+
+				hero.showHud = false;
+			}
+			
+			//plaform
+			if(hero.overlaps(plat.onPlatform) && plat.delay == 0) {
+				
+				hero.setX(plat.onPlatform.getX() + 10);
+				hero.setY(plat.onPlatform.getY() - 10);
+			}
+			
+			//falling
+			if(hero.falling == 0) {
+
+				canMove = true;
+			}
+		
+			for(int i = 0; i < fall.length; i++) {
+			if(hero.overlaps(fall[i]) && !hero.overlaps(plat)) {
+				
+				hero.heroFalling();
+				
+				canMove = false;
+				
+				if(hero.wasLeftOf(fall[i])) {
+					
+					hero.setX(hero.getX() + 2);
+					hero.moveLeft = true;
+					hero.moveAbove = false;
+					hero.moveBelow = false;
+					hero.moveRight = false;
+				}
+				
+				if(hero.wasRightOf(fall[i])) {
+					
+					hero.moveRight = true;
+					hero.moveLeft = false;
+					hero.moveAbove = false;
+					hero.moveBelow = false;
+				}
+				
+
+				if(hero.wasBelow(fall[i])) {
+					
+					hero.moveBelow = true;
+					hero.moveRight = false;
+					hero.moveLeft = false;
+					hero.moveAbove = false;
+				}
+				
+				if(hero.wasAbove(fall[i])) {
+					
+					hero.setY(hero.getY() + 2);
+					hero.moveAbove = true;
+					hero.moveLeft = false;
+					hero.moveBelow = false;
+					hero.moveRight = false;		
+				}
+			}
+			}
+			
+			//bomb
+			if(pressing[LT]) hero.dropBomb();
 			
 			if(pressing[_E] && hero.overlaps(chest) && !gotCoin) {
 				
@@ -99,12 +261,13 @@ public class Level2 extends Level {
 			}
 			
 			//trap
-			if(hero.overlaps(trap) && trap.damage) {
+			for(int i = 0; i < trap.length; i++) {
+			if(hero.overlaps(trap[i]) && trap[i].damage) {
 				
-				if(trap.delay == 150)
+				if(trap[i].delay == 150)
 				hero.heroDamage(20);
 			}
-			
+			}
 			//viking
 			if(hero.overlaps(viking.sight)) {
 				
@@ -117,52 +280,58 @@ public class Level2 extends Level {
 			
 			if(hero.overlaps(viking)) {
 				
-				hud.showHud = true;
+				viking.showHud = true;
+				
+				viking.resetHealth();
 				
 				canMove = false;
 				
-				hero.inBattle = true;
+				hero.showHud = true;
 			}
 			
 			if(viking.getHealth() <= 0) {
 				
-				hud.showHud = false;
+				viking.showHud = false;
 				
 				canMove = true;
 
-				hero.inBattle = false;
+				hero.showHud = false;
+				
 			}
 			
 			//wolf
-			if(hero.overlaps(e2.sight)) {
+			if(hero.overlaps(wolf.sight)) {
 				
-				e2.chase(hero);
-				e2.activateRun();
+				wolf.chase(hero);
+				wolf.activateRun();
 			}
 			
-			if(!hero.overlaps(e2.sight)) {
+			if(!hero.overlaps(wolf.sight)) {
 				
-				e2.runBack();
-				e2.moveToInitialLocation();
+				wolf.runBack();
+				wolf.moveToInitialLocation();
 			
 			}
 			
-			if(hero.overlaps(e2)) {
+			if(hero.overlaps(wolf)) {
 				
-				hud.showHud = true;
+				wolf.showHud = true;
+				
+				wolf.resetHealth();
+				
 				canMove = false;
 				
-				hero.inBattle = true;
+				hero.showHud = true;
 			}
 			
-			if(e2.getHealth() <= 0) {
+			if(wolf.getHealth() <= 0) {
 				
-				hud.showHud = false;
+				wolf.showHud = false;
 				canMove = true;
 
-				hero.inBattle = false;
+				hero.showHud = false;
 			}
-
+			
 	}
 	
 	public void paint(Graphics pen) {
@@ -170,26 +339,30 @@ public class Level2 extends Level {
 		pen.setColor(Color.BLACK);
 		pen.fillRect(0, 0, 3000, 3000);
 		
-		if(!canMove) {
+		if(wolf.showHud || viking.showHud || mimic.showHud) {
 			
 			hero.draw(pen);
 			hud.draw(pen);
 			
-			if(hero.overlaps(e2))
-			e2.draw(pen);
+			if(hero.overlaps(mimic.onMimic))
+				//draw mimic
+				mimic.draw(pen);
+			
+			if(hero.overlaps(wolf))
+			wolf.draw(pen);
 			
 			if(hero.overlaps(viking))
 			viking.draw(pen);
 			
 			if(!hud.canAttack) {
 				
-				//Wolf damage
-				if(e2.delay >= 259) {
+				//wolf damage
+				if(wolf.delay >= 259) {
 					
-					if(e2.biteAttack)
+					if(wolf.biteAttack)
 					hero.heroDamage(40);
 					
-					if(e2.howlAttack)
+					if(wolf.howlAttack)
 					hero.heroDamage(30);
 					
 					hud.canAttack = true;
@@ -205,30 +378,55 @@ public class Level2 extends Level {
 					
 					hud.canAttack = true;
 				}
+
+				if(mimic.delay >= 190) {
+					
+					hero.heroDamage(50);
+					 
+					hud.canAttack = true;
+				}
 			}
-			
 		}
 		else{
 			
-			stage2.draw(pen);
+			if(!bomb.wallDestroy) stage2.draw(pen);
 			
-			trap.draw(pen);
+			else stage2Destroy.draw(pen);
 			
-			hero.draw(pen);
+			plat.draw(pen);
+			for(int i = 0; i < trap.length; i++)
+			trap[i].draw(pen);
 			
 			chest.draw(pen);
+			
+			for(int i = 0; i < slime.length; i++)
+			slime[i].draw(pen);
+			
+			hero.draw(pen);
 			
 			if(hero.overlaps(chest)) {
 				
 				chest.openChest(pen);
 			}
 			
+			for(int i = 0; i < fall.length; i++) {
+				
+			fall[i].draw(pen);
+			}
+			
+			mimic.draw(pen);
+			
 			viking.draw(pen);
 			
-			e2.draw(pen);
+			wolf.draw(pen);
 			
 			vendor.draw(pen);
 			
+			wolf2.draw(pen);
+			
+			bomb.draw(pen);
+			
+			nextLevel.draw(pen);
 		}
 	}
 }
