@@ -39,7 +39,7 @@ public class HealthBar extends Rect {
 	
 	public void increaseMaxHealth() {
 		
-		maxHealth = 300;
+		maxHealth = 350;
 	}
 	
 	public int getHealth() {

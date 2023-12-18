@@ -64,7 +64,7 @@ public class Game extends GameBase {
 	static Level2 level2 = new Level2(hero, pressing, hud2, wolf2, mimic2, bomb, viking2, coin);
 	static Level3 level3 = new Level3(hero, pressing, coin, bomb);
 	//change level back
-	static Level level = level2;
+	static Level level = level1;
 	
 	public void initialize() {
 		
@@ -95,11 +95,6 @@ public class Game extends GameBase {
 	public void inGameLoop() {
 		
 		level.inGameLoop();
-		
-//		if(hero.overlaps(e1) && hero.swordSwing) 
-//		
-//		hero.damageWolf(e1);
-//	
 		
 		if(level == level1) {
 			

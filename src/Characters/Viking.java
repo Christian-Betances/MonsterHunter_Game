@@ -37,7 +37,7 @@ public class Viking extends Rect{
 	public boolean showHud = false;
 	private boolean defeated = false;
 	
-	HealthBar health = new HealthBar (200, 870, 200, 20);
+	HealthBar health = new HealthBar (150, 870, 200, 20);
 	CombatHud hud;
 	
 	Animation vikingRT = new Animation ("Viking_Move/Viking_RT", 8, 10);

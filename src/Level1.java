@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import Characters.Hero;
-import Characters.Mimic;
 import Characters.Vendor;
 import Characters.Wolf;
 import Objects.Coin;
@@ -69,30 +68,6 @@ public class Level1 extends Level {
 				hero.setLocation(600, 700);
 			}
 			
-			//mimic
-//			if(hero.overlaps(mimic.onMimic)) {
-//				
-//				if(pressing[_E]) {
-//					
-//				mimic.showHud = true;
-//				
-//				mimic.resetHealth();
-//				
-//				canMove = false;
-//				
-//				hero.showHud = true;
-//				}
-//			}
-//			
-//			if(mimic.getHealth() <= 0) {
-//				
-//				mimic.showHud = false;
-//				
-//				canMove = true;
-//
-//				hero.showHud = false;
-//			}
-			
 			//vendor
 			if(hero.overlaps(vendor)) {
 				
@@ -128,9 +103,8 @@ public class Level1 extends Level {
 			if(hero.overlaps(wolf)) {
 				
 				wolf.showHud = true;
-				
-				//change back
-//				wolf.resetHealth();
+
+				wolf.resetHealth();
 				
 				canMove = false;
 				
@@ -161,12 +135,7 @@ public class Level1 extends Level {
 			if(hero.overlaps(wolf))
 			//draw wolf
 			wolf.draw(pen);
-			
-			
-//			if(hero.overlaps(mimic.onMimic))
-//			//draw mimic
-//			mimic.draw(pen);
-//			
+						
 			if(!hud.canAttack) {
 				
 				//Wolf damage
@@ -181,12 +150,6 @@ public class Level1 extends Level {
 					hud.canAttack = true;
 				}
 				
-//				if(mimic.delay >= 190) {
-//					
-//					hero.heroDamage(50);
-//					 
-//					hud.canAttack = true;
-//				}
 			}
 			
 		}
@@ -196,14 +159,7 @@ public class Level1 extends Level {
 			
 			pen.setColor(Color.GREEN);
 			nextLevel.draw(pen);
-			
-//			mimic.draw(pen);
-			
-//			if(hero.overlaps(mimic.onMimic) && mimic.getHealth() >= 0) {
-//				
-//				mimic.openChest(pen);	
-//			}
-//			
+					
 			hero.draw(pen);
 			
 			wolf.draw(pen);

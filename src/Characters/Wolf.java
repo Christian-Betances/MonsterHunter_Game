@@ -36,7 +36,7 @@ public class Wolf extends Rect{
     public int delay = 0;
     public boolean turnOnDelay = false;
     
-    private HealthBar health = new HealthBar(250, 870, 120, 20);
+    private HealthBar health = new HealthBar(140, 870, 120, 20);
     
     Animation wolfIdle = new Animation("Wolf_Idle/Wolf_Idle_LT", 4, 15);
     //Wolf running from right

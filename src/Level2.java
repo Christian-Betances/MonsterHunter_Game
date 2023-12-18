@@ -57,7 +57,7 @@ public class Level2 extends Level {
 	Wall[] wall;
 	
 	Floor [] fall = new Floor[] {
-			new Floor(630, 5, 300, 5),
+			new Floor(620, 5, 400, 10),
 			new Floor(940, 50, 200, 200),
 			new Floor(820, 230, 340, 270),
 			new Floor(800, 660, 80, 200),
@@ -389,6 +389,7 @@ public class Level2 extends Level {
 		}
 		else{
 			
+			//destroy wall
 			if(!bomb.wallDestroy) stage2.draw(pen);
 			
 			else stage2Destroy.draw(pen);

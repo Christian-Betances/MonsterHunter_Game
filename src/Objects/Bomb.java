@@ -19,12 +19,12 @@ public class Bomb extends Rect {
 		super(x, y, w, h);
 	}
 	
-	public void BombLocation(int bx, int by) {
+	public void BombLocation(int x, int y) {
 		
 		if(following) {
 			
-		super.setX(bx - 30);
-		super.setY(by);
+		super.setX(x - 30);
+		super.setY(y);
 		}
 	}
 	

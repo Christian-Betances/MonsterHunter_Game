@@ -2,8 +2,6 @@ package Characters;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -59,9 +57,9 @@ public class Vendor extends Rect implements MouseListener{
 			
 		};
 		
-		shopDescription = new String [] {"[ 200 coins] Increase max health by 50",
+		shopDescription = new String [] {"[ 200 coins] Increase max health by 100",
 										 "[ 200 coins] Increase damage by 10",
-										 "[ 100 coins] Replenish health by 50",
+										 "[ 100 coins] Replenish max health",
 										 "[ 200 coins] Increase max mana by 50",
 										 "[ 100 coins] Replenish mana by 50"
 		};
@@ -153,7 +151,7 @@ public class Vendor extends Rect implements MouseListener{
 		
 		if(shopItems[2].contains(mx, my) && coin.getBalance() >= 100) {
 			
-			hero.increaseHealth(50);
+			hero.resetHealth();
 			hero.bought(100);
 			System.out.println("Health Increased");
 		}
@@ -162,7 +160,7 @@ public class Vendor extends Rect implements MouseListener{
 			
 			hero.increaseMaxMana(50);
 			hero.bought(200);
-			System.out.println("Mana Increased");
+			System.out.println("Max Mana Increased");
 			
 			canBuy3 = false;
 		}

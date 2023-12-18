@@ -46,13 +46,13 @@ public class Hero extends Sprite {
 	private boolean right = false;
 	private boolean left = false;
 	
-	Animation back = new Animation("BOH/Hero_ATK_UP", 3, 20);
+	private Animation back = new Animation("BOH/Hero_ATK_UP", 3, 20);
 	
-	Animation heal = new Animation("Heal/Heal", 24, 3);
+	private Animation heal = new Animation("Heal/Heal", 24, 3);
 	
-	Animation fire = new Animation("Fire/Fire_Ball", 14, 20);
+	private Animation fire = new Animation("Fire/Fire_Ball", 14, 20);
 	
-	public Animation flare = new Animation("Flare/Solar_Flare", 36, 3);
+	private Animation flare = new Animation("Flare/Solar_Flare", 36, 3);
 	
 	//abilities
 	public boolean slash = false;
@@ -71,8 +71,6 @@ public class Hero extends Sprite {
 	public Hero(int x, int y) {
 		
 		super("Hero/Hero", pose, 3, x, y, 70, 70);
-
-		mana.setMana(200);
 		
 		swordHitbox = new Rect(getX(), getY(), swordWidth, swordHeight);
 	}
@@ -219,6 +217,11 @@ public class Hero extends Sprite {
 	public void heroDamage(int x) {
 		
 		health.damage(x);
+	}
+	
+	public void resetHealth() {
+		
+		health.resetHealth();
 	}
 	
 	public void increaseHealth(int x) {

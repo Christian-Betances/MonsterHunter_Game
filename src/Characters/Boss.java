@@ -140,7 +140,6 @@ public class Boss extends Rect {
 			
 			if(ATK1.animationFinish()) {
 				
-			//	pen.drawImage(laser.getCurrentImage(), attack1Hitbox.getX(), attack1Hitbox.getY(), 400, 400, null);
 				handleRandom = true;
 				canMove = true;
 			}

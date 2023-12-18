@@ -72,9 +72,9 @@ public class CombatHud extends Rect implements MouseListener {
 		 
 		manaDisc = new String [] {
 									"Mana: +50 | ATK: " + (30 + number),
-									"Mana: -50 | ATK: " + 50 + number,
-									"Mana: -100 | ATK: " + 70 + number,
-									"Mana: -150 | Heal: " + 100 + number,
+									"Mana: -50 | ATK: " + (50 + number),
+									"Mana: -200 | ATK: " + (100 + number),
+									"Mana: -150 | Heal: maxHealth",
 									};
 	}
 	
@@ -175,9 +175,9 @@ public class CombatHud extends Rect implements MouseListener {
 			
 			hero.slash = true;
 			
-			if(wolf.inFight) wolf.damage(10 + attackIncrease);
-			if(viking.inFight) viking.damage(10 + attackIncrease);
-			if(mimic.inFight) mimic.damage(10 + attackIncrease);
+			if(wolf.inFight) wolf.damage(30 + attackIncrease);
+			if(viking.inFight) viking.damage(30 + attackIncrease);
+			if(mimic.inFight) mimic.damage(30 + attackIncrease);
 			
 			mimic.damage(10 + attackIncrease);
 			
@@ -193,10 +193,10 @@ public class CombatHud extends Rect implements MouseListener {
 			
 			hero.fireAttack = true;
 			
-			if(wolf.inFight) wolf.damage(30 + attackIncrease);
-			if(viking.inFight) viking.damage(30 + attackIncrease);
-			if(mimic.inFight) mimic.damage(30 + attackIncrease);
-			if(mimic.inFight) mimic.damage(30 + attackIncrease);
+			if(wolf.inFight) wolf.damage(50 + attackIncrease);
+			if(viking.inFight) viking.damage(50 + attackIncrease);
+			if(mimic.inFight) mimic.damage(50 + attackIncrease);
+			if(mimic.inFight) mimic.damage(50 + attackIncrease);
 			System.out.println("Fire");
 			
 			attackDelay = true;
@@ -205,12 +205,12 @@ public class CombatHud extends Rect implements MouseListener {
 		
 		if(attackHud[2].contains(mx, my) && hero.heroMana() >= 100) {
 			
-			hero.decreaseMana(100);
+			hero.decreaseMana(200);
 			
 			hero.flareAttack = true;
-			if(wolf.inFight) wolf.damage(50 + attackIncrease);
-			if(viking.inFight) viking.damage(50 + attackIncrease);
-			if(mimic.inFight) mimic.damage(50 + attackIncrease);
+			if(wolf.inFight) wolf.damage(100 + attackIncrease);
+			if(viking.inFight) viking.damage(100 + attackIncrease);
+			if(mimic.inFight) mimic.damage(100 + attackIncrease);
 			
 			System.out.println("Flare");
 			
@@ -223,7 +223,7 @@ public class CombatHud extends Rect implements MouseListener {
 		if(attackHud[3].contains(mx, my) && hero.heroMana() >= 150) {
 			
 			hero.decreaseMana(150);
-			hero.increaseHealth(100);
+			hero.resetHealth();
 			
 			hero.healHealth = true;
 			

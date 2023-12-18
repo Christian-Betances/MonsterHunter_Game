@@ -14,7 +14,7 @@ public class Mimic extends Rect{
 	
 	Animation mimicATK = new Animation("Mimic_ATK/mimic_Atk", 10, 10);
 	
-	HealthBar health = new HealthBar(150, 870, 200, 20);
+	HealthBar health = new HealthBar(100, 870, 200, 20);
 	
 	private int x;
 	private int y;
