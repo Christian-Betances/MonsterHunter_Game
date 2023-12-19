@@ -97,6 +97,10 @@ public class Level2 extends Level {
 		this.viking = viking;
 		
 		this.coin = coin;
+		
+		hud.getWolf(wolf);
+		hud.getMimic(mimic);
+		hud.getViking(viking);
 	}
 	
 	public void initialize() {}

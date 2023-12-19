@@ -64,7 +64,7 @@ public class Game extends GameBase {
 	static Level2 level2 = new Level2(hero, pressing, hud2, wolf2, mimic2, bomb, viking2, coin);
 	static Level3 level3 = new Level3(hero, pressing, coin, bomb);
 	//change level back
-	static Level level = level1;
+	static Level level = level2;
 	
 	public void initialize() {
 		
